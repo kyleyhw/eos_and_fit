@@ -11,7 +11,7 @@ class EOS:
         self.lambda_f = sp.interpolate.interp1d(x=self.ms, y=self.Lambdas)
 
         m1 = np.linspace(np.min(self.ms), np.max(self.ms), 10000)
-        m2 = m1 / self.q
+        m2 = m1 * self.q
 
         filter = (m2 > np.min(self.ms)) & (m2 < np.max(self.ms)) # so that lambda can be interpolated over m2
 
@@ -21,8 +21,10 @@ class EOS:
         lambda_m1 = self.lambda_f(self.m1)
         lambda_m2 = self.lambda_f(self.m2)
 
-        self.lambda_s = (lambda_m1 + lambda_m2) / 2
-        self.lambda_a = (lambda_m1 - lambda_m2) / 2
+        self.lambda_s = (lambda_m2 + lambda_m1) / 2
+        self.lambda_a = (lambda_m2 - lambda_m1) / 2
+
+        print(self.lambda_a)
 
     def plot(self, ax, **kwargs):
         ax.plot(self.lambda_s, self.lambda_a, label=self.name + ' q=' + str(self.q), **kwargs)
