@@ -23,15 +23,15 @@ def plot_main(names, qs):
     ax_min = 1
     ax_max = 1e5
 
-    ax.set_ylim((ax_min, ax_max))
-    ax.set_xlim((ax_min, ax_max))
+    # ax.set_ylim((ax_min, ax_max))
+    # ax.set_xlim((ax_min, ax_max))
 
     ax.set_xscale('log')
     ax.set_yscale('log')
 
     ax.set_xlabel(r'\Lambda_s')
     ax.set_ylabel(r'\Lambda_a')
-    # plt.legend()
+    plt.legend()
 
     plt.savefig('plots/plot.png')
 
