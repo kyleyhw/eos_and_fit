@@ -56,4 +56,4 @@ names = ['alf2cr', 'alf4cr', 'bsk20cr']
 qs = [0.5, 0.75, 0.9]
 
 plot_main(names=names, qs=qs)
-# plot_raw(names=names)
+plot_raw(names=names)
