@@ -24,8 +24,6 @@ class EOS:
         self.lambda_s = (lambda_m2 + lambda_m1) / 2
         self.lambda_a = (lambda_m2 - lambda_m1) / 2
 
-        print(self.lambda_a)
-
     def plot(self, ax, **kwargs):
         ax.plot(self.lambda_s, self.lambda_a, label=self.name + ' q=' + str(self.q), **kwargs)
 
