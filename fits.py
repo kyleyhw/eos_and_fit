@@ -12,9 +12,9 @@ class YagiYunes:
 
         self.n = 0.743
 
-    def f(self):
-        numerator = 1 - self.q**(10 / (3 - self.n))
-        denominator = 1 + self.q**(10 / (3 - self.n))
+    def f(self, q): # not sure if should pass q upon init or only in f
+        numerator = 1 - q**(10 / (3 - self.n))
+        denominator = 1 + q**(10 / (3 - self.n))
         return numerator / denominator
 
     def func(self, lambda_s):
@@ -26,7 +26,7 @@ class YagiYunes:
                 denominator_sum += (self.c[i-1, j-1] * self.q**j * lambda_s**(-i / 5))
 
         fraction = (1 + numerator_sum) / (1 + denominator_sum)
-        result = self.f() * lambda_s * fraction
+        result = self.f(self.q) * lambda_s * fraction
         return result
 
     def plot(self, ax, **kwargs):

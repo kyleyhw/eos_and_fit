@@ -7,8 +7,8 @@ class EOS:
         self.name = name
         self.q = q
 
-        self.ms = data.ms[:np.nonzero(data.ms == np.max(data.ms))[0][0]]
-        self.Lambdas = data.Lambdas[:np.nonzero(data.ms == np.max(data.ms))[0][0]]
+        self.ms = data.ms
+        self.Lambdas = data.Lambdas
 
         self.lambda_f = sp.interpolate.interp1d(x=self.ms, y=self.Lambdas)
 

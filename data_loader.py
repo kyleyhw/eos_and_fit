@@ -13,5 +13,10 @@ class DataLoader:
                 ms.append(float(row[2]))
                 Lambdas.append(float(row[3]))
 
-        self.ms = np.array(ms)
-        self.Lambdas = np.array(Lambdas)
+        ms = np.array(ms)
+        Lambdas = np.array(Lambdas)
+
+        injectivity_index = np.nonzero(ms == np.max(ms))[0][0]
+
+        self.ms = ms[:injectivity_index]
+        self.Lambdas = Lambdas[:injectivity_index]
