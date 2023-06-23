@@ -17,7 +17,7 @@ class YagiYunes:
         denominator = 1 + q**(10 / (3 - self.n))
         return numerator / denominator
 
-    def func(self, lambda_s):
+    def function(self, lambda_s):
         numerator_sum = 0
         denominator_sum = 0
         for i in range(1, 4):
@@ -29,9 +29,9 @@ class YagiYunes:
         result = self.f(self.q) * lambda_s * fraction
         return result
 
-    def plot(self, ax, **kwargs):
-        lambda_s = np.linspace(*ax.get_xlim(), 1000, dtype=complex) # complex for fractional root in numpy
-        lambda_a = self.func(lambda_s)
+    def plot(self, ax, lims, **kwargs):
+        lambda_s = np.linspace(*lims, 1000, dtype=complex) # complex for fractional root in numpy
+        lambda_a = self.function(lambda_s)
 
         lambda_s = np.real(lambda_s) # imaginary parts should be all zero
         lambda_a = np.real(lambda_a)

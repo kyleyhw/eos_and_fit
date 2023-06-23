@@ -2,10 +2,14 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
+from data_loader import DataLoader
+
 class EOS:
-    def __init__(self, data, name, q):
+    def __init__(self, name, q):
         self.name = name
         self.q = q
+
+        data = DataLoader('data/macro-' + name + '.csv')
 
         self.ms = data.ms
         self.Lambdas = data.Lambdas
@@ -25,6 +29,8 @@ class EOS:
 
         self.lambda_s = (lambda_m2 + lambda_m1) / 2
         self.lambda_a = (lambda_m2 - lambda_m1) / 2
+
+        self.lower_lim = np.min(self.lambda_s)
 
     def plot(self, ax, **kwargs):
         ax.plot(self.lambda_s, self.lambda_a, label=self.name + ' q=' + str(self.q), **kwargs)
