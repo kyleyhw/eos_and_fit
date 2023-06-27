@@ -5,19 +5,26 @@ from data_loader import DataLoader
 from eos import EOS
 
 class Plotter:
-    def __init__(self, qs, names, Fit):
+    def __init__(self, qs, names, Fit, ax_lims=(8, 1e4)):
         self.qs = qs
         self.names = names
         self.Fit = Fit
+        self.ax_min = ax_lims[0]
+        self.ax_max = ax_lims[1]
 
         self.qs_dict = {}
 
         for q in self.qs:
             self.qs_dict[str(q)] = {}
             dictionary = self.qs_dict[str(q)]
-            dictionary['fit'] = self.Fit(q=q)
+            fit = self.Fit(q=q)
+            dictionary['fit'] = fit
+
             for name in self.names:
-                dictionary[name] = EOS(name=name, q=q)
+                eos = EOS(name=name, q=q)
+                dictionary[name] = eos
+                residual = np.abs(eos.lambda_a - fit.function(eos.lambda_s)) / fit.function(eos.lambda_s)
+                dictionary[name + '_residual'] = residual
 
 
     def plot_main(self, save=False, show=False):
@@ -38,11 +45,8 @@ class Plotter:
 
             fit.plot(ax=ax, lims=(lower_lim, upper_lim))
 
-        ax_min = 1
-        ax_max = 1e4
-
-        ax.set_ylim((ax_min, ax_max))
-        ax.set_xlim((ax_min, ax_max))
+        ax.set_ylim((self.ax_min, self.ax_max))
+        ax.set_xlim((self.ax_min, self.ax_max))
 
         ax.set_xscale('log')
         ax.set_yscale('log')
@@ -56,11 +60,34 @@ class Plotter:
         if show:
             plt.show()
 
+    def plot_residual(self, save=False, show=False):
+        fig, ax = plt.subplots(1, 1)
+        for q in self.qs:
+            dictionary = self.qs_dict[str(q)]
+            for name in self.names:
+                x = dictionary[name].lambda_s
+                y = dictionary[name + '_residual']
+                ax.plot(x, y, label=name + ' q=' + str(q))
+
+        fig.suptitle('Residual plots for each EOS')
+
+        ax.set_xlim((self.ax_min, self.ax_max))
+
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+
+        ax.set_xlabel(r'\Lambda_s')
+        ax.set_ylabel('fractional difference')
+
+        if save:
+            fig.savefig('plots/residual_plot.png')
+        if show:
+            fig.show()
+
 
     def plot_raw(self, save=False, show=False):
         fig, ax = plt.subplots(1, 1)
         for name in self.names:
-            data = DataLoader('data/macro-' + name + '.csv')
             eos = EOS(name=name, q=1)
             eos.plot_raw(ax=ax)
 
