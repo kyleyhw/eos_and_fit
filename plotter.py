@@ -26,9 +26,7 @@ class Plotter:
                 residual = np.abs(eos.lambda_a - fit.function(eos.lambda_s)) / fit.function(eos.lambda_s)
                 dictionary[name + '_residual'] = residual
 
-
-    def plot_main(self, save=False, show=False):
-        fig, ax = plt.subplots(1, 1)
+    def plot_main_on_ax(self, ax):
         for q in self.qs:
             dictionary = self.qs_dict[str(q)]
             fit = dictionary['fit']
@@ -44,6 +42,19 @@ class Plotter:
             upper_lim = ax.get_xlim()[1]
 
             fit.plot(ax=ax, lims=(lower_lim, upper_lim))
+
+    def plot_residual_on_ax(self, ax):
+        for q in self.qs:
+            dictionary = self.qs_dict[str(q)]
+            for name in self.names:
+                x = dictionary[name].lambda_s
+                y = dictionary[name + '_residual']
+                ax.plot(x, y, label=name + ' q=' + str(q))
+
+
+    def plot_main(self, save=False, show=False):
+        fig, ax = plt.subplots(1, 1)
+        self.plot_main_on_ax(ax=ax)
 
         ax.set_ylim((self.ax_min, self.ax_max))
         ax.set_xlim((self.ax_min, self.ax_max))
@@ -64,14 +75,7 @@ class Plotter:
 
     def plot_residual(self, save=False, show=False):
         fig, ax = plt.subplots(1, 1)
-        for q in self.qs:
-            dictionary = self.qs_dict[str(q)]
-            for name in self.names:
-                x = dictionary[name].lambda_s
-                y = dictionary[name + '_residual']
-                ax.plot(x, y, label=name + ' q=' + str(q))
-
-        fig.suptitle('Residual plots for each EOS')
+        self.plot_residual_on_ax(ax=ax)
 
         ax.set_xlim((self.ax_min, self.ax_max))
 
@@ -80,6 +84,8 @@ class Plotter:
 
         ax.set_xlabel(r'\Lambda_s')
         ax.set_ylabel('fractional difference')
+
+        fig.suptitle('Residual plots for each EOS')
 
         if save:
             fig.savefig('plots/residual_plot.png')
