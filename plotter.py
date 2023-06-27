@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from data_loader import DataLoader
+plt.rcParams['text.usetex'] = True
+
 from eos import EOS
 
 class Plotter:
@@ -93,7 +94,11 @@ class Plotter:
             fig.show()
 
     def plot_combined(self, save=False, show=False):
-        fig, (ax1, ax2) = plt.subplots(2, 1)
+        fig, axs = plt.subplots(2, 1, sharex=True)
+        (ax1, ax2) = axs
+
+        fig.subplots_adjust(wspace=0, hspace=0)
+
         self.plot_main_on_ax(ax=ax1)
         self.plot_residual_on_ax(ax=ax2)
 
