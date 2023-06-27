@@ -54,6 +54,8 @@ class Plotter:
         ax.set_xlabel(r'\Lambda_s')
         ax.set_ylabel(r'\Lambda_a')
 
+        fig.suptitle('EOS and fit for q in ' + str(self.qs))
+
         # plt.legend()
         if save:
             plt.savefig('plots/plot.png')
