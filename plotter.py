@@ -43,6 +43,12 @@ class Plotter:
 
             fit.plot(ax=ax, lims=(lower_lim, upper_lim))
 
+        ax.set_ylim((self.ax_min, self.ax_max))
+        ax.set_xlim((self.ax_min, self.ax_max))
+
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+
     def plot_residual_on_ax(self, ax):
         for q in self.qs:
             dictionary = self.qs_dict[str(q)]
@@ -51,16 +57,15 @@ class Plotter:
                 y = dictionary[name + '_residual']
                 ax.plot(x, y, label=name + ' q=' + str(q))
 
-
-    def plot_main(self, save=False, show=False):
-        fig, ax = plt.subplots(1, 1)
-        self.plot_main_on_ax(ax=ax)
-
-        ax.set_ylim((self.ax_min, self.ax_max))
         ax.set_xlim((self.ax_min, self.ax_max))
 
         ax.set_xscale('log')
         ax.set_yscale('log')
+
+
+    def plot_main(self, save=False, show=False):
+        fig, ax = plt.subplots(1, 1)
+        self.plot_main_on_ax(ax=ax)
 
         ax.set_xlabel(r'\Lambda_s')
         ax.set_ylabel(r'\Lambda_a')
@@ -77,11 +82,6 @@ class Plotter:
         fig, ax = plt.subplots(1, 1)
         self.plot_residual_on_ax(ax=ax)
 
-        ax.set_xlim((self.ax_min, self.ax_max))
-
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-
         ax.set_xlabel(r'\Lambda_s')
         ax.set_ylabel('fractional difference')
 
@@ -89,6 +89,16 @@ class Plotter:
 
         if save:
             fig.savefig('plots/residual_plot.png')
+        if show:
+            fig.show()
+
+    def plot_combined(self, save=False, show=False):
+        fig, (ax1, ax2) = plt.subplots(2, 1)
+        self.plot_main_on_ax(ax=ax1)
+        self.plot_residual_on_ax(ax=ax2)
+
+        if save:
+            fig.savefig('plots/combined_plot.png')
         if show:
             fig.show()
 
