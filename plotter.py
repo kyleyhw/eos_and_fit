@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.rcParams['text.usetex'] = True
-
 from eos import EOS
 
 class Plotter:
@@ -68,8 +66,8 @@ class Plotter:
         fig, ax = plt.subplots(1, 1)
         self.plot_main_on_ax(ax=ax)
 
-        ax.set_xlabel(r'\Lambda_s')
-        ax.set_ylabel(r'\Lambda_a')
+        ax.set_xlabel(r'$\Lambda_s$')
+        ax.set_ylabel(r'$\Lambda_a$')
 
         fig.suptitle('EOS and fit for q in ' + str(self.qs))
 
