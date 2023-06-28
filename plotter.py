@@ -25,6 +25,8 @@ class Plotter:
                 residual = np.abs(eos.lambda_a - fit.function(eos.lambda_s)) / fit.function(eos.lambda_s)
                 dictionary[name + '_residual'] = residual
 
+            self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
+
     def plot_main_on_ax(self, ax):
         for q in self.qs:
             dictionary = self.qs_dict[str(q)]
@@ -49,12 +51,13 @@ class Plotter:
         ax.set_yscale('log')
 
     def plot_residual_on_ax(self, ax):
-        for q in self.qs:
+        for i, q in enumerate(self.qs):
+            linestyle = self.linestyles[i % len(self.qs)]
             dictionary = self.qs_dict[str(q)]
             for name in self.names:
                 x = dictionary[name].lambda_s
                 y = dictionary[name + '_residual']
-                ax.plot(x, y, label=name + ' q=' + str(q))
+                ax.plot(x, y, label=name + ' q=' + str(q), linestyle=linestyle)
 
         ax.set_xlim((self.ax_min, self.ax_max))
 

@@ -37,3 +37,7 @@ class YagiYunes:
         lambda_a = np.real(lambda_a)
 
         ax.plot(lambda_s, lambda_a, label='Yagi & Yunes fit for q=' + str(self.q), color='black', **kwargs)
+
+        text_x = np.min(lambda_s) / 1.5
+        text_y = np.min(lambda_a) * 1.5
+        ax.text(text_x, text_y, 'q=' + str(self.q))
