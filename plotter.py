@@ -81,7 +81,7 @@ class Plotter:
         fig, ax = plt.subplots(1, 1)
         self.plot_residual_on_ax(ax=ax)
 
-        ax.set_xlabel(r'\Lambda_s')
+        ax.set_xlabel(r'$\Lambda_s$')
         ax.set_ylabel('fractional difference')
 
         fig.suptitle('Residual plots for each EOS')
@@ -116,7 +116,7 @@ class Plotter:
         ax.set_yscale('log')
 
         ax.set_xlabel(r'm')
-        ax.set_ylabel(r'\Lambda(m)')
+        ax.set_ylabel(r'$\Lambda$(m)')
         fig.suptitle('Raw plot for lambda(m) vs m for various EOS')
         plt.legend()
         if save:
