@@ -32,7 +32,7 @@ class EOS:
         self.lower_lim = np.min(self.lambda_s)
 
     def plot(self, ax, **kwargs):
-        ax.plot(self.lambda_s, self.lambda_a, label=self.name + ' q=' + str(self.q), **kwargs)
+        ax.plot(self.lambda_s, self.lambda_a, **kwargs)
 
     def plot_raw(self, ax, **kwargs):
-        ax.plot(self.ms, self.Lambdas, label=self.name, **kwargs)
+        ax.plot(self.ms, self.Lambdas, **kwargs)

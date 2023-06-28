@@ -26,23 +26,31 @@ class Plotter:
                 dictionary[name + '_residual'] = residual
 
             self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
+            self.colors = ['red', 'blue', 'lime', 'violet', 'orange']
 
     def plot_main_on_ax(self, ax):
-        for q in self.qs:
+        for i, q in enumerate(self.qs):
             dictionary = self.qs_dict[str(q)]
             fit = dictionary['fit']
             lower_lims = []
+            label = None
 
-            for name in self.names:
+            for j, name in enumerate(self.names):
                 eos = dictionary[name]
-                eos.plot(ax=ax)
+                color = self.colors[j % len(self.names)]
+                if i == 0:
+                    label = name
+                eos.plot(ax=ax, label=label, color=color)
 
                 lower_lims.append(eos.lower_lim)
 
             lower_lim = np.min(lower_lims)
             upper_lim = ax.get_xlim()[1]
 
-            fit.plot(ax=ax, lims=(lower_lim, upper_lim))
+            if i == 0:
+                label=fit.name
+
+            fit.plot(ax=ax, lims=(lower_lim, upper_lim), label=label)
 
         ax.set_ylim((self.ax_min, self.ax_max))
         ax.set_xlim((self.ax_min, self.ax_max))
@@ -52,17 +60,29 @@ class Plotter:
 
     def plot_residual_on_ax(self, ax):
         for i, q in enumerate(self.qs):
-            linestyle = self.linestyles[i % len(self.qs)]
             dictionary = self.qs_dict[str(q)]
-            for name in self.names:
+
+            linestyle = self.linestyles[i % len(self.qs)]
+
+            for j, name in enumerate(self.names):
+                color = self.colors[j % len(self.names)]
+
                 x = dictionary[name].lambda_s
                 y = dictionary[name + '_residual']
-                ax.plot(x, y, label=name + ' q=' + str(q), linestyle=linestyle)
+
+                label = None
+
+                if j == 0:
+                    label = 'q=' + str(q)
+
+                ax.plot(x, y, label=label, linestyle=linestyle, color=color)
 
         ax.set_xlim((self.ax_min, self.ax_max))
 
         ax.set_xscale('log')
         ax.set_yscale('log')
+
+        ax.legend()
 
 
     def plot_main(self, save=False, show=False):
@@ -74,9 +94,10 @@ class Plotter:
 
         fig.suptitle('EOS and fit for q in ' + str(self.qs))
 
-        # plt.legend()
+        plt.legend()
+
         if save:
-            plt.savefig('plots/plot.png')
+            plt.savefig('plots/main_plot.png')
         if show:
             plt.show()
 
@@ -103,6 +124,12 @@ class Plotter:
         self.plot_main_on_ax(ax=ax1)
         self.plot_residual_on_ax(ax=ax2)
 
+        ax1.set_ylabel(r'$\Lambda_a$')
+        ax2.set_ylabel(r'fractional diff. from fit')
+        ax2.set_xlabel(r'$\Lambda_s$')
+
+        ax1.legend()
+
         if save:
             fig.savefig('plots/combined_plot.png')
         if show:
@@ -121,7 +148,9 @@ class Plotter:
         ax.set_xlabel(r'm')
         ax.set_ylabel(r'$\Lambda$(m)')
         fig.suptitle('Raw plot for lambda(m) vs m for various EOS')
-        plt.legend()
+
+        # plt.legend()
+
         if save:
             plt.savefig('plots/raw_plot.png')
         if show:

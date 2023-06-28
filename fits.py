@@ -4,6 +4,8 @@ class YagiYunes:
     def __init__(self, q):
         self.q = q
 
+        self.name = 'Yagi & Yunes fit'
+
         self.b = np.array([-27.7408, 8.42358, 122.686, -19.7551, -175.496, 133.708])
         self.c = np.array([-25.5593, 5.58527, 92.0337, 26.8586, -70.247, -56.3076])
 
@@ -36,7 +38,7 @@ class YagiYunes:
         lambda_s = np.real(lambda_s) # imaginary parts should be all zero
         lambda_a = np.real(lambda_a)
 
-        ax.plot(lambda_s, lambda_a, label='Yagi & Yunes fit for q=' + str(self.q), color='black', **kwargs)
+        ax.plot(lambda_s, lambda_a, color='black', **kwargs)
 
         text_x = np.min(lambda_s) / 1.5
         text_y = np.min(lambda_a) * 1.5
