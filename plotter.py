@@ -37,7 +37,7 @@ class Plotter:
 
             for j, name in enumerate(self.names):
                 eos = dictionary[name]
-                color = self.colors[j % len(self.names)]
+                color = self.colors[j % len(self.colors)]
                 if i == 0:
                     label = name
                 eos.plot(ax=ax, label=label, color=color)
@@ -62,10 +62,10 @@ class Plotter:
         for i, q in enumerate(self.qs):
             dictionary = self.qs_dict[str(q)]
 
-            linestyle = self.linestyles[i % len(self.qs)]
+            linestyle = self.linestyles[i % len(self.linestyles)]
 
             for j, name in enumerate(self.names):
-                color = self.colors[j % len(self.names)]
+                color = self.colors[j % len(self.colors)]
 
                 x = dictionary[name].lambda_s
                 y = dictionary[name + '_residual']
