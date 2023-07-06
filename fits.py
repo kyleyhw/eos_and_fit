@@ -43,3 +43,7 @@ class YagiYunes:
         text_x = np.min(lambda_s) / 1.5
         text_y = np.min(lambda_a) * 1.5
         ax.text(text_x, text_y, 'q=' + str(self.q))
+
+class CommonRadius:
+    def __init__(self, q):
+        self.q = q
