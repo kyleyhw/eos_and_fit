@@ -4,25 +4,30 @@ import matplotlib.pyplot as plt
 from eos import EOS
 
 class Plotter:
-    def __init__(self, qs, names, Fit, ax_lims=(8, 1e4)):
+    def __init__(self, qs, names, truth, fits, ax_lims=(8, 1e4)):
         self.qs = qs
         self.names = names
-        self.Fit = Fit
+        self.truth = truth
+        self.fits = fits
         self.ax_min = ax_lims[0]
         self.ax_max = ax_lims[1]
 
         self.qs_dict = {}
+        self.fit_names = []
 
         for q in self.qs:
             self.qs_dict[str(q)] = {}
             dictionary = self.qs_dict[str(q)]
-            fit = self.Fit(q=q)
-            dictionary['fit'] = fit
+            truth = self.truth(q=q)
+            for Fit in self.fits:
+                fit = Fit(q=q)
+                dictionary[fit.name] = fit
+                self.fit_names.append(fit.name)
 
             for name in self.names:
                 eos = EOS(name=name, q=q)
                 dictionary[name] = eos
-                residual = np.abs(eos.lambda_a - fit.function(eos.lambda_s)) / fit.function(eos.lambda_s)
+                residual = np.abs(eos.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
                 dictionary[name + '_residual'] = residual
 
             self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
@@ -48,7 +53,7 @@ class Plotter:
             upper_lim = ax.get_xlim()[1]
 
             if i == 0:
-                label=fit.name
+                label=self.truth.name
 
             fit.plot(ax=ax, lims=(lower_lim, upper_lim), label=label)
 

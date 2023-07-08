@@ -47,3 +47,21 @@ class YagiYunes:
 class CommonRadius:
     def __init__(self, q):
         self.q = q
+
+        self.name = 'Common Radius fit'
+
+    def function(self, lambda_s):
+        lambda_1 = self.q**3 * lambda_s
+        lambda_2 = self.q**(-3) * lambda_s
+
+        result = (lambda_2 - lambda_1) / 2
+        return result
+
+    def plot(self, ax, lims, **kwargs):
+        lambda_s = np.linspace(*lims, 1000, dtype=complex)  # complex for fractional root in numpy
+        lambda_a = self.function(lambda_s)
+
+        lambda_s = np.real(lambda_s)  # imaginary parts should be all zero
+        lambda_a = np.real(lambda_a)
+
+        ax.plot(lambda_s, lambda_a, color='black', **kwargs)
