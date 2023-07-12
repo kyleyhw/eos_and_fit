@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from eos import EOS
 
 class Plotter:
-    def __init__(self, qs, names, truth, fits, ax_lims=(8, 1e4)):
+    def __init__(self, qs, eos_names, truth, fits, ax_lims=(8, 1e4)):
         self.qs = qs
-        self.names = names
+        self.eos_names = eos_names
         self.truth = truth
         self.fits = fits
         self.ax_min = ax_lims[0]
@@ -15,20 +15,29 @@ class Plotter:
         self.qs_dict = {}
         self.fit_names = []
 
+        self.lower_lims = []
+
         for q in self.qs:
             self.qs_dict[str(q)] = {}
             dictionary = self.qs_dict[str(q)]
             truth = self.truth(q=q)
+
+            for eos_name in self.eos_names:
+                eos = EOS(name=eos_name, q=q)
+                dictionary[eos_name] = eos
+                residual = np.abs(eos.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
+                dictionary[eos_name + '_residual'] = residual
+                self.lower_lims.append(eos.lower_lim)
+
+            self.lower_lim = np.min(lower_lims)
+            self.upper_lim = ax.get_xlim()[1]
+
             for Fit in self.fits:
                 fit = Fit(q=q)
                 dictionary[fit.name] = fit
                 self.fit_names.append(fit.name)
-
-            for name in self.names:
-                eos = EOS(name=name, q=q)
-                dictionary[name] = eos
-                residual = np.abs(eos.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
-                dictionary[name + '_residual'] = residual
+                residual = np.abs(fit.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
+                dictionary[fit.name + '_residual'] = residual
 
             self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
             self.colors = ['red', 'blue', 'lime', 'violet', 'orange']
@@ -37,7 +46,7 @@ class Plotter:
         for i, q in enumerate(self.qs):
             dictionary = self.qs_dict[str(q)]
             fit = dictionary['fit']
-            lower_lims = []
+
             label = None
 
             for j, name in enumerate(self.names):
@@ -47,15 +56,10 @@ class Plotter:
                     label = name
                 eos.plot(ax=ax, label=label, color=color)
 
-                lower_lims.append(eos.lower_lim)
-
-            lower_lim = np.min(lower_lims)
-            upper_lim = ax.get_xlim()[1]
-
             if i == 0:
                 label=self.truth.name
 
-            fit.plot(ax=ax, lims=(lower_lim, upper_lim), label=label)
+            fit.plot(ax=ax, lims=(self.lower_lim, self.upper_lim), label=label)
 
         ax.set_ylim((self.ax_min, self.ax_max))
         ax.set_xlim((self.ax_min, self.ax_max))
