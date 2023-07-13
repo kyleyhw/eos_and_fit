@@ -50,30 +50,35 @@ class Plotter:
             self.colors = ['red', 'blue', 'lime', 'violet', 'orange']
 
     def plot_main_on_ax(self, ax):
+        used_labels = []
         for i, q in enumerate(self.qs):
             dictionary = self.qs_dict[str(q)]
             truth = dictionary['truth']
 
-            label = None
-
             for j, name in enumerate(self.eos_names):
                 eos = dictionary[name]
                 color = self.colors[j % len(self.colors)]
-                if i == 0:
+                label = None
+                if name not in used_labels:
                     label = name
+                    used_labels.append(label)
                 eos.plot(ax=ax, label=label, color=color, alpha=0.4)
 
             for j, name in enumerate(self.fit_names):
                 fit = dictionary[name]
-                linestyle = self.linestyles[j % len(self.linestyles)]
-                if i == 0:
-                    label=name
-                fit.plot(ax=ax, label=label, linestyle=linestyle, color='black', alpha=0.4)
+                label = None
+                if name not in used_labels:
+                    label = name
+                    used_labels.append(label)
+                fit.plot(ax=ax, label=label, color='black', alpha=0.4)
 
-            if i == 0:
-                label=truth.name
+            label = None
 
-            truth.plot(ax=ax, label=label, alpha=1)
+            if truth.name not in used_labels:
+                label = truth.name
+                used_labels.append(label)
+
+            truth.plot(ax=ax, label=label, color='black', alpha=1)
 
 
         ax.set_ylim((self.ax_min, self.ax_max))
@@ -88,7 +93,7 @@ class Plotter:
 
             linestyle = self.linestyles[i % len(self.linestyles)]
 
-            for j, name in enumerate(self.eos_names):
+            for j, name in enumerate(self.eos_names + self.fit_names):
                 color = self.colors[j % len(self.colors)]
 
                 x = dictionary[name].lambda_s
@@ -96,23 +101,15 @@ class Plotter:
 
                 label = None
 
-                if j == 0:
+                if j == (len(self.eos_names) + len(self.fit_names) - 1):
                     label = 'q=' + str(q)
 
-                ax.plot(x, y, label=label, linestyle=linestyle, color=color)
+                if name in self.eos_names:
+                    ax.plot(x, y, linestyle=linestyle, color=color, alpha=0.4)
+                elif name in self.fit_names:
+                    ax.plot(x, y, label=label, linestyle=linestyle, color='black')
 
-            for j, name in enumerate(self.fit_names):
-                linestyle = self.linestyles[j % len(self.linestyles)]
 
-                x = dictionary[name].lambda_s
-                y = dictionary[name + '_residual']
-
-                label = None
-
-                if j == 0:
-                    label = 'q=' + str(q)
-
-                ax.plot(x, y, label=label, linestyle=linestyle, color=color)
 
         ax.set_xlim((self.ax_min, self.ax_max))
 
