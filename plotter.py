@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from eos import EOS
 
 class Plotter:
-    def __init__(self, qs, eos_names, truth, fits, ax_lims=(8, 1e4)):
+    def __init__(self, qs, eos_names, Truth, fits, ax_lims=(8, 1e4)):
         self.qs = qs
         self.eos_names = eos_names
-        self.truth = truth
+        self.Truth = Truth
         self.fits = fits
         self.ax_min = ax_lims[0]
         self.ax_max = ax_lims[1]
@@ -16,27 +16,34 @@ class Plotter:
         self.fit_names = []
 
         self.lower_lims = []
+        self.upper_lims = []
 
         for q in self.qs:
             self.qs_dict[str(q)] = {}
             dictionary = self.qs_dict[str(q)]
-            truth = self.truth(q=q)
 
             for eos_name in self.eos_names:
                 eos = EOS(name=eos_name, q=q)
                 dictionary[eos_name] = eos
+                self.lower_lims.append(eos.lower_lim)
+                self.upper_lims.append(eos.upper_lim)
+
+            self.lower_lim = np.min(self.lower_lims)
+            self.upper_lim = np.max(self.upper_lims)
+
+            truth = self.Truth(q=q, lims=(self.lower_lim, self.upper_lim))
+            dictionary['truth'] = truth
+
+            for eos_name in self.eos_names:
+                dictionary[eos_name] = eos
                 residual = np.abs(eos.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
                 dictionary[eos_name + '_residual'] = residual
-                self.lower_lims.append(eos.lower_lim)
-
-            self.lower_lim = np.min(lower_lims)
-            self.upper_lim = ax.get_xlim()[1]
 
             for Fit in self.fits:
-                fit = Fit(q=q)
+                fit = Fit(q=q, lims=(self.lower_lim, self.upper_lim))
                 dictionary[fit.name] = fit
                 self.fit_names.append(fit.name)
-                residual = np.abs(fit.lambda_a - truth.function(eos.lambda_s)) / truth.function(eos.lambda_s)
+                residual = np.abs(fit.lambda_a - truth.function(fit.lambda_a)) / truth.function(fit.lambda_a)
                 dictionary[fit.name + '_residual'] = residual
 
             self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
@@ -45,21 +52,29 @@ class Plotter:
     def plot_main_on_ax(self, ax):
         for i, q in enumerate(self.qs):
             dictionary = self.qs_dict[str(q)]
-            fit = dictionary['fit']
+            truth = dictionary['truth']
 
             label = None
 
-            for j, name in enumerate(self.names):
+            for j, name in enumerate(self.eos_names):
                 eos = dictionary[name]
                 color = self.colors[j % len(self.colors)]
                 if i == 0:
                     label = name
-                eos.plot(ax=ax, label=label, color=color)
+                eos.plot(ax=ax, label=label, color=color, alpha=0.4)
+
+            for j, name in enumerate(self.fit_names):
+                fit = dictionary[name]
+                linestyle = self.linestyles[j % len(self.linestyles)]
+                if i == 0:
+                    label=name
+                fit.plot(ax=ax, label=label, linestyle=linestyle, color='black', alpha=0.4)
 
             if i == 0:
-                label=self.truth.name
+                label=truth.name
 
-            fit.plot(ax=ax, lims=(self.lower_lim, self.upper_lim), label=label)
+            truth.plot(ax=ax, label=label, alpha=1)
+
 
         ax.set_ylim((self.ax_min, self.ax_max))
         ax.set_xlim((self.ax_min, self.ax_max))
@@ -73,8 +88,21 @@ class Plotter:
 
             linestyle = self.linestyles[i % len(self.linestyles)]
 
-            for j, name in enumerate(self.names):
+            for j, name in enumerate(self.eos_names):
                 color = self.colors[j % len(self.colors)]
+
+                x = dictionary[name].lambda_s
+                y = dictionary[name + '_residual']
+
+                label = None
+
+                if j == 0:
+                    label = 'q=' + str(q)
+
+                ax.plot(x, y, label=label, linestyle=linestyle, color=color)
+
+            for j, name in enumerate(self.fit_names):
+                linestyle = self.linestyles[j % len(self.linestyles)]
 
                 x = dictionary[name].lambda_s
                 y = dictionary[name + '_residual']
@@ -147,7 +175,7 @@ class Plotter:
 
     def plot_raw(self, save=False, show=False):
         fig, ax = plt.subplots(1, 1)
-        for name in self.names:
+        for name in self.eos_names:
             eos = EOS(name=name, q=1)
             eos.plot_raw(ax=ax)
 

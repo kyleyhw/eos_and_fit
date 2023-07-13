@@ -1,7 +1,7 @@
 import numpy as np
 
 class YagiYunes:
-    def __init__(self, q):
+    def __init__(self, q, lims):
         self.q = q
 
         self.name = 'Yagi & Yunes fit'
@@ -13,6 +13,12 @@ class YagiYunes:
         self.c = np.reshape(self.c, newshape=(3, 2))
 
         self.n = 0.743
+
+        lambda_s = np.linspace(*lims, 1000, dtype=complex)  # complex for fractional root in numpy
+        lambda_a = self.function(lambda_s)
+
+        self.lambda_s = np.real(lambda_s)  # imaginary parts should be all zero
+        self.lambda_a = np.real(lambda_a)
 
     def f(self, q): # not sure if should pass q upon init or only in f
         numerator = 1 - q**(10 / (3 - self.n))
@@ -31,24 +37,24 @@ class YagiYunes:
         result = self.f(self.q) * lambda_s * fraction
         return result
 
-    def plot(self, ax, lims, **kwargs):
-        lambda_s = np.linspace(*lims, 1000, dtype=complex) # complex for fractional root in numpy
-        lambda_a = self.function(lambda_s)
+    def plot(self, ax, **kwargs):
+        ax.plot(self.lambda_s, self.lambda_a, **kwargs)
 
-        lambda_s = np.real(lambda_s) # imaginary parts should be all zero
-        lambda_a = np.real(lambda_a)
-
-        ax.plot(lambda_s, lambda_a, color='black', **kwargs)
-
-        text_x = np.min(lambda_s) / 1.5
-        text_y = np.min(lambda_a) * 1.5
+        text_x = np.min(self.lambda_s) / 1.5
+        text_y = np.min(self.lambda_a) * 1.5
         ax.text(text_x, text_y, 'q=' + str(self.q))
 
 class CommonRadius:
-    def __init__(self, q):
+    def __init__(self, q, lims):
         self.q = q
 
         self.name = 'Common Radius fit'
+
+        lambda_s = np.linspace(*lims, 1000, dtype=complex)  # complex for fractional root in numpy
+        lambda_a = self.function(lambda_s)
+
+        self.lambda_s = np.real(lambda_s)  # imaginary parts should be all zero
+        self.lambda_a = np.real(lambda_a)
 
     def function(self, lambda_s):
         lambda_1 = self.q**3 * lambda_s
@@ -57,11 +63,5 @@ class CommonRadius:
         result = (lambda_2 - lambda_1) / 2
         return result
 
-    def plot(self, ax, lims, **kwargs):
-        lambda_s = np.linspace(*lims, 1000, dtype=complex)  # complex for fractional root in numpy
-        lambda_a = self.function(lambda_s)
-
-        lambda_s = np.real(lambda_s)  # imaginary parts should be all zero
-        lambda_a = np.real(lambda_a)
-
-        ax.plot(lambda_s, lambda_a, color='black', **kwargs)
+    def plot(self, ax, **kwargs):
+        ax.plot(self.lambda_s, self.lambda_a, **kwargs)

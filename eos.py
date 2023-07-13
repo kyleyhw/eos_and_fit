@@ -30,6 +30,7 @@ class EOS:
         self.lambda_a = (lambda_m2 - lambda_m1) / 2
 
         self.lower_lim = np.min(self.lambda_s)
+        self.upper_lim = np.max(self.lambda_s)
 
     def plot(self, ax, **kwargs):
         ax.plot(self.lambda_s, self.lambda_a, **kwargs)
